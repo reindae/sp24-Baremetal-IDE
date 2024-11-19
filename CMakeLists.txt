@@ -41,7 +41,7 @@ set(CMAKE_EXECUTABLE_SUFFIX            ".elf")
 #################################
 
 # CPU architecture
-set(ARCH                "rv64imafd")
+set(ARCH                "rv64gcv_zfh_zvfh")
 set(ABI                 "lp64d")
 set(CMODEL              "medany")
 set(ARCH_FLAGS          -march=${ARCH} -mabi=${ABI} -mcmodel=${CMODEL})
@@ -96,8 +96,16 @@ add_executable(app
   app/src/main.c
 )
 
+add_executable(dsp-saturn
+  dsp-saturn/src/fft2_main.c
+  dsp-saturn/common/syscalls.c
+)
+
+
 target_include_directories(app PUBLIC app/include)
 
+
+target_include_directories(dsp-saturn PUBLIC dsp-saturn/common)
 
 #################################
 # Dependencies
@@ -109,6 +117,10 @@ add_subdirectory(lib)
 add_subdirectory(lab)
 
 target_link_libraries(app PRIVATE 
+  -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
+)
+
+target_link_libraries(dsp-saturn PRIVATE 
   -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
 )
 

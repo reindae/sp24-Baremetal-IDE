@@ -81,11 +81,19 @@ int main(int argc, char **argv) {
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  int i = 0;
   char name[50];
   puts("Enter your name: ");
-  scanf("%s", name);
-  printf("Hello, %s", name);
-  
+  while (1) {
+    if (i < 50) {
+      uart_receive(UART0, &name[i], 1, 10000);
+      if (name[i] == '\r') i = 50;
+      else i = i + 1;
+    }
+    if (i == 50) printf("Hello, %s\n", name);
+  }
+  // scanf("%s", name);
+  // printf("Hello, %s", name);
   /* USER CODE END WHILE */
 }
 

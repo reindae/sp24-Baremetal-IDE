@@ -16,6 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "chip_config.h"
+#include "time.h"
+#include <stdint.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -58,19 +60,26 @@ void app_init() {
   gpio_init_config.pull = GPIO_PULL_NONE;
   gpio_init_config.drive_strength = GPIO_DS_STRONG;
 
+  GPIO_InitType gpio1_init_config;
+  gpio1_init_config.mode = GPIO_MODE_INPUT;
+  gpio1_init_config.pull = GPIO_PULL_NONE;
+  gpio1_init_config.drive_strength = GPIO_DS_STRONG;
+
   gpio_init(GPIOA, &gpio_init_config, GPIO_PIN_0);
-  
+  gpio_init(GPIOA, &gpio1_init_config, GPIO_PIN_1);
   gpio_write_pin(GPIOA, GPIO_PIN_0, 1);
 }
 
 
 
 void app_main() {
-  gpio_write_pin(GPIOA, GPIO_PIN_1, 1);
-  msleep(100);
-  
-  gpio_write_pin(GPIOA, GPIO_PIN_1, 0);
-  msleep(100);
+  if (gpio_read_pin(GPIOA, GPIO_PIN_1) != 1) {
+    gpio_write_pin(GPIOA, GPIO_PIN_0, 1);
+    msleep(100);
+    
+    gpio_write_pin(GPIOA, GPIO_PIN_0, 0);
+    msleep(100);
+  }
 }
 /* USER CODE END PUC */
 
