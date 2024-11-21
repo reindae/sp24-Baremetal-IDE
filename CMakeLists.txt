@@ -101,11 +101,33 @@ add_executable(dsp-saturn
   dsp-saturn/common/syscalls.c
 )
 
+add_executable(app2
+  benchmarks/vec-igemm/vec-igemm_main.c
+  benchmarks/vec-igemm/vec-igemm.S
+
+)
+
+add_executable(dsp-sgemm
+  benchmarks/vec-sgemm/vec-sgemm_main.c
+  benchmarks/vec-sgemm/vec-sgemm.S
+)
+
+add_executable(dsp-strcmp
+  benchmarks/vec-strcmp/vec-strcmp_main.c
+  benchmarks/vec-strcmp/vec-strcmp.S
+)
+
 
 target_include_directories(app PUBLIC app/include)
 
 
 target_include_directories(dsp-saturn PUBLIC dsp-saturn/common)
+
+target_include_directories(app2 PUBLIC benchmarks/common)
+
+target_include_directories(dsp-sgemm PUBLIC benchmarks/common)
+
+target_include_directories(dsp-strcmp PUBLIC benchmarks/common)
 
 #################################
 # Dependencies
@@ -121,6 +143,18 @@ target_link_libraries(app PRIVATE
 )
 
 target_link_libraries(dsp-saturn PRIVATE 
+  -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
+)
+
+target_link_libraries(app2 PRIVATE 
+  -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
+)
+
+target_link_libraries(dsp-sgemm PRIVATE
+  -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
+)
+
+target_link_libraries(dsp-strcmp PRIVATE
   -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
 )
 
