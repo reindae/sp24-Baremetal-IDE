@@ -15,12 +15,12 @@
 #include "dataset1.h"
 #include "riscv.h"
 #include "chip_config.h"
-//--------------------------------------------------------------------------
-// Input/Reference Data
 #include "encoding.h"
 
 //--------------------------------------------------------------------------
 // Main
+extern volatile uint64_t tohost;
+extern volatile uint64_t fromhost;
 
 void *vec_sgemm_nn (size_t, size_t, size_t, const float*, size_t, const float*, size_t, float*, size_t);
 
@@ -43,9 +43,13 @@ void* memset(void* dest, int byte, size_t len)
   return dest;
 }
 
-int main( int argc, char* argv[] )
+void app_init() {
+  // torch::executor::runtime_init();
+}
+
+void vec_sgemm_main()
 {
-  float results_data[ARRAY_SIZE] = {0};
+  int results_data[ARRAY_SIZE] = {0};
 
 #if PREALLOCATE
   // If needed we preallocate everything in the caches
@@ -65,4 +69,48 @@ int main( int argc, char* argv[] )
 
   // Check the results
   return verifyFloat( ARRAY_SIZE, results_data, verify_data );
+}
+
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(int argc, char **argv) {
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Configure the system clock */
+  /* Configure the system clock */
+  
+  /* USER CODE BEGIN SysInit */
+  UART_InitType UART_init_config;
+  UART_init_config.baudrate = 115200;
+  UART_init_config.mode = UART_MODE_TX_RX;
+  UART_init_config.stopbits = UART_STOPBITS_2;
+  uart_init(UART0, &UART_init_config);
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */  
+  /* USER CODE BEGIN Init */
+  app_init();
+  /* USER CODE END Init */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1) {
+    vec_sgemm_main();
+    return 0;
+  }
+  /* USER CODE END WHILE */
+}
+
+/*
+ * Main function for secondary harts
+ * 
+ * Multi-threaded programs should provide their own implementation.
+ */
+void __attribute__((weak, noreturn)) __main(void) {
+  while (1) {
+   asm volatile ("wfi");
+  }
 }
