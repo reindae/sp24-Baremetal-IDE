@@ -265,6 +265,8 @@ void fft1d(float* samples, size_t N, float* result_real, float* result_imag) {
     result_imag[i] = even[i % (N / 2)] + (*imag_twiddle) * odd[i % (N / 2)];
   }
 
+  free(even);
+  free(odd);
 }
 
 void computeTwiddle(int N, int k, double *real, double *imag) {
