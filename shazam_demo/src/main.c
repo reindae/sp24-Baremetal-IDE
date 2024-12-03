@@ -114,6 +114,16 @@ void app_main(uint32_t* data) {
     for (int i = 0; i < 128; i++) {
       printf("%d\r\n", (uint32_t*) 0x08000000U + 4*i);
     }
+
+    printf("Starting CPU FFT\r\n");
+    float* result_real;
+    float* result_imag;
+    fft1d((float*) data, 128, result_real, result_imag);
+
+    for (int i = 0; i < 128; i += 1) {
+      printf("Real index %d: %d\r\n", i, (float*) (result_real + i));
+      printf("Real index %d: %d\r\n", i, (float*) (result_imag + i));
+    }
     
     // uint32_t poll, real, imag;
     // for(int i=0; i<512; i++) {
@@ -214,4 +224,54 @@ void __attribute__((weak, noreturn)) __main(void) {
   while (1) {
    asm volatile ("wfi");
   }
+}
+
+// Naive implementation using little vectorization to get something going
+void fft1d(float* samples, size_t N, float* result_real, float* result_imag) {
+  if (N == 1) {
+    return samples;
+  }
+
+  // float even[N / 2];
+  // float odd[N / 2];
+  float* even = (float*)malloc((N / 2) * sizeof(float));
+  float* odd = (float*)malloc((N / 2) * sizeof(float));
+
+
+  int evenIndex = 0;
+  int oddIndex = 0;
+  for (int i = 0; i < N; i += 1) {
+    if ((i % 2) == 0) {
+      even[evenIndex] = samples[i];
+      evenIndex += 1;
+    } else {
+      odd[oddIndex] = samples[i];
+      oddIndex += 1;
+    }
+  }
+
+  float *real_twiddle;
+  float *imag_twiddle;
+  fft1d(even, N / 2, result_real, result_imag);
+  fft1d(odd, N / 2, result_real, result_imag);
+
+  // float real_twiddles[N];
+  // float imag_twiddles[N];
+  for (int i = 0; i < N; i += 1) {
+    computeTwiddle(N, i, real_twiddle, imag_twiddle);
+    // real_twiddles[i] = *real_twiddle;
+    // imag_twiddles[i] = *imag_twiddle;
+    result_real[i] = even[i % (N / 2)] + (*real_twiddle) * odd[i % (N / 2)];
+    result_imag[i] = even[i % (N / 2)] + (*imag_twiddle) * odd[i % (N / 2)];
+  }
+
+}
+
+void computeTwiddle(int N, int k, double *real, double *imag) {
+    // Calculate the angle for the twiddle factor
+    double angle = -(TWO_PI) * k / N;
+    
+    // Compute the real and imaginary parts of the twiddle factor
+    *real = cos(angle);  // Real part: cos(2 * pi * k / N)
+    *imag = sin(angle);  // Imaginary part: -sin(2 * pi * k / N)
 }
