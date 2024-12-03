@@ -57,7 +57,7 @@ int vec_igemm_main()
     memset(results_data, 0, sizeof(results_data));
   #endif
 
-  // Do the sgemm
+  // Do the igemm
   uint64_t start_time = READ_CSR("mcycle");
   uint64_t start_instructions = READ_CSR("minstret");
  
