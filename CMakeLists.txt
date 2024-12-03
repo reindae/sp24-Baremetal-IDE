@@ -96,6 +96,10 @@ add_executable(app
   app/src/main.c
 )
 
+add_executable(shazam_demo
+  shazam_demo/src/main.c
+)
+
 add_executable(dsp-saturn
   dsp-saturn/src/fft2_main.c
   dsp-saturn/common/syscalls.c
@@ -116,9 +120,9 @@ add_executable(dsp-strcmp
   benchmarks/vec-strcmp/vec-strcmp.S
 )
 
-
 target_include_directories(app PUBLIC app/include)
 
+target_include_directories(shazam_demo PUBLIC shazam_demo/include)
 
 target_include_directories(dsp-saturn PUBLIC dsp-saturn/common)
 
@@ -138,6 +142,10 @@ add_subdirectory(lib)
 add_subdirectory(lab)
 
 target_link_libraries(app PRIVATE 
+  -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
+)
+
+target_link_libraries(shazam_demo PRIVATE 
   -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
 )
 

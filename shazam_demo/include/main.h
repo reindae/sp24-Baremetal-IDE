@@ -32,6 +32,7 @@ extern "C" {
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
+#include "meep.h"
 
 #include "riscv.h"
 
