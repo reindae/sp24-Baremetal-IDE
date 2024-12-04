@@ -98,6 +98,7 @@ add_executable(app
 
 add_executable(shazam_demo
   shazam_demo/src/main.c
+  shazam_demo/src/kiss_fft.c
 )
 
 add_executable(dsp-saturn
