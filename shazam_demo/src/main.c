@@ -20,7 +20,7 @@
 #include "chip_config.h"
 #include "hal_DMA.h"
 #include "hal_fft.h"
-#include "meep.h"
+#include "meepy.h"
 //#include "tone_samples.h"
 #define DMA_ADDR1 0x87000000L
 
@@ -85,42 +85,42 @@ void app_init() {
 void app_main(uint32_t* data) {
   uint64_t mhartid = READ_CSR("mhartid");
 
-    printf("\n[STARTING TEST]\n\n");
+    printf("\r\n[STARTING TEST]\r\n\r\n");
 
     reset_fft();
     reset_DMA();
     // enable_Crack();
 
-    write_fft_dma(1, 512, data);
+    write_fft_dma(1, 128, data);
     uint64_t start_time = READ_CSR("mcycle");
     uint64_t start_instructions = READ_CSR("minstret");
 
     while(fft_busy() || fft_count_left()) {
       continue;
-        printf("pain:%d, %d \n", fft_busy(), fft_count_left());
+        printf("pain:%d, %d \r\n", fft_busy(), fft_count_left());
     }; // This is needed since fft is blocking and is not a very good block
 
-    read_fft_dma(1, 512, 0x08000000U);
+    read_fft_dma(1, 128, DMA_ADDR1);
 
     uint64_t end_time = READ_CSR("mcycle");
     uint64_t end_instructions = READ_CSR("minstret");
 
-    printf("[DONE] Waiting Write\n");
+    printf("[DONE] Waiting Write\r\n");
     printf("mcycle = %lu\r\n", end_time - start_time);
     printf("minstret = %lu\r\n", end_instructions - start_instructions);
 
     
-    for (int i = 0; i < 512; i++) {
-      printf("Imag: %d  Real: %d\r\n", (*((uint32_t*) (0x08000000U + 4*i)) >> 16), (*((uint32_t*) (0x08000000U + 4*i)) && 0xFFFF));
-    }
-    
-    // uint32_t poll, real, imag;
-    // for(int i=0; i<512; i++) {
-    //     poll = reg_read32(DMA_ADDR1 + i*8);
-    //     real = poll & 0xFFFF; 
-    //     imag = (poll >> 16);
-    //     printf("[%d]real: (%hd), imag: (%hd)\n", i, real, imag);
+    // for (int i = 0; i < 128; i++) {
+    //   printf("Imag: %d  Real: %d\r\n", (*((uint32_t*) (0x08000000U + 4*i)) >> 16), (*((uint32_t*) (0x08000000U + 4*i)) && 0xFFFF));
     // }
+    
+    uint32_t poll, real, imag;
+    for(int i=0; i<512; i++) {
+        poll = reg_read32(DMA_ADDR1 + i*8);
+        real = poll & 0xFFFF; 
+        imag = (poll >> 16);
+        printf("[%d]real: (%hd), imag: (%hd)\r\n", i, real, imag);
+    }
     // for(int i=0; i<256; i++) {
     //     poll = reg_read16(DMA_ADDR1 + i*4);
     //     printf("[%d]real: (%hd)\n", i, poll);
