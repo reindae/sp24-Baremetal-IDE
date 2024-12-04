@@ -141,6 +141,8 @@ add_subdirectory(glossy)
 add_subdirectory(lib)
 add_subdirectory(lab)
 
+target_link_libraries(shazam_demo PRIVATE m)
+
 target_link_libraries(app PRIVATE 
   -L${CMAKE_BINARY_DIR}/glossy -Wl,--whole-archive glossy -Wl,--no-whole-archive
 )
