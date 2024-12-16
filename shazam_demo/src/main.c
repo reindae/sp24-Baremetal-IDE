@@ -128,7 +128,7 @@ void app_main(uint32_t* data) {
     kiss_fft_cpx* fftoutbuf = (kiss_fft_cpx*) malloc(nfft * sizeof(kiss_fft_cpx) );
 
     for(int i = 0; i < nfft; i += 1) {
-        fftbuf[i].r = A3_samples[i];
+        fftbuf[i].r = B3_samples_512[i];
         fftbuf[i].i = 0;
     }
 
@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
-    app_main(A3_samples);
+    app_main(B3_samples_512);
     return 0;
   }
   /* USER CODE END WHILE */
